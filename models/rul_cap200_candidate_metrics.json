@@ -1,0 +1,22 @@
+{
+  "dataset": "NASA C-MAPSS FD001",
+  "evaluation": "100 final-cycle test-engine observations",
+  "candidate_target_cap": 200,
+  "baseline": {
+    "model": "Existing cap-125 model",
+    "mae": 13.476561639595355,
+    "rmse": 17.607564469101646
+  },
+  "candidate": {
+    "model": "HistGradientBoostingRegressor",
+    "target_cap": 200,
+    "mae": 17.379911886739073,
+    "rmse": 23.068476081270585
+  },
+  "delta_candidate_minus_baseline": {
+    "mae_cycles": 3.9034,
+    "rmse_cycles": 5.4609
+  },
+  "caveat": "The FD001 test labels have already been used for exploratory model comparisons. Treat this as an exploratory comparison, not a completely untouched final evaluation.",
+  "deployment_decision": "candidate_only_existing_model_unchanged"
+}

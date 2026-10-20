@@ -1,0 +1,6 @@
+﻿repeat,split_seed,train_engine_count,calibration_engine_count,evaluation_engine_count,train_row_count,calibration_row_count,evaluation_row_count,calibration_order_statistic_rank_1_based,conformal_radius_cycles,conformal_row_coverage,conformal_full_trajectory_engine_coverage,target_engine_coverage,mean_conformal_interval_width_cycles,raw_member_p10_p90_row_coverage,raw_member_p10_p90_mean_width_cycles,point_mae_cycles,point_rmse_cycles,split_target_met
+1,6600,60,20,20,12563,3816,4252,17,48.0136,0.9774,0.8,0.8,69.9366,0.2472,9.2771,12.3376,18.086,True
+2,6601,60,20,20,12206,4236,4189,17,47.0543,0.9914,0.85,0.8,67.9269,0.3263,12.4705,11.0337,15.8697,True
+3,6602,60,20,20,12309,4346,3976,17,54.2234,0.9975,0.95,0.8,76.9116,0.299,9.7438,11.3032,16.1208,True
+4,6603,60,20,20,12127,4329,4175,17,57.2058,1.0,1.0,0.8,79.2145,0.2383,8.6378,10.9704,15.5463,True
+5,6604,60,20,20,12696,3744,4191,17,49.9516,0.9962,0.9,0.8,68.6133,0.3255,10.4799,10.8978,16.0429,True

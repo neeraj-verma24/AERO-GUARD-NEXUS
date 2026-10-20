@@ -1,0 +1,44 @@
+[
+  {
+    "id": "positive_hydraulic_inspection",
+    "query": "hydraulic inspection leakage record",
+    "expected_match": true,
+    "expected_sources": ["sample_maintenance_notes.md"],
+    "top_k": 5
+  },
+  {
+    "id": "positive_changed_content",
+    "query": "additional fictional text document change invalidation",
+    "expected_match": true,
+    "expected_sources": ["sample_maintenance_notes.md"],
+    "top_k": 5
+  },
+  {
+    "id": "positive_observed_leakage",
+    "query": "inspection record observed leakage review",
+    "expected_match": true,
+    "expected_sources": ["sample_maintenance_notes.md"],
+    "top_k": 5
+  },
+  {
+    "id": "negative_torque_specification",
+    "query": "turbine blade replacement torque specification",
+    "expected_match": false,
+    "expected_sources": [],
+    "top_k": 5
+  },
+  {
+    "id": "negative_unrelated_terms",
+    "query": "quantum microwave lunar gearbox",
+    "expected_match": false,
+    "expected_sources": [],
+    "top_k": 5
+  },
+  {
+    "id": "negative_avionics_parameters",
+    "query": "avionics impedance capacitor orbital harmonics",
+    "expected_match": false,
+    "expected_sources": [],
+    "top_k": 5
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "dataset": "NASA C-MAPSS FD001 training trajectories",
+  "random_state": 42,
+  "training_engine_count": 80,
+  "heldout_engine_count": 20,
+  "endpoint_observation_count": 100,
+  "cutoffs_per_engine": 5,
+  "selection_metric": "MAE in remaining cycles",
+  "results_sorted_by_mae": [
+    {
+      "target_cap": "125",
+      "mae_cycles": 13.1589,
+      "rmse_cycles": 17.6576
+    },
+    {
+      "target_cap": "100",
+      "mae_cycles": 15.2169,
+      "rmse_cycles": 20.3305
+    },
+    {
+      "target_cap": "150",
+      "mae_cycles": 15.4137,
+      "rmse_cycles": 20.8392
+    },
+    {
+      "target_cap": "200",
+      "mae_cycles": 20.7119,
+      "rmse_cycles": 28.3996
+    },
+    {
+      "target_cap": "75",
+      "mae_cycles": 22.4591,
+      "rmse_cycles": 30.418
+    },
+    {
+      "target_cap": "Uncapped",
+      "mae_cycles": 22.6898,
+      "rmse_cycles": 32.3677
+    }
+  ],
+  "limitations": [
+    "Synthetic cutoff distribution, not official test distribution",
+    "Multiple endpoints per held-out engine are correlated",
+    "Results are for model selection, not aircraft validation"
+  ]
+}

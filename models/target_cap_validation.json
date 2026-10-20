@@ -1,0 +1,51 @@
+{
+  "dataset": "NASA C-MAPSS FD001 training trajectories",
+  "split": "GroupShuffleSplit by engine ID",
+  "random_state": 42,
+  "selection_metric": "MAE against uncapped RUL",
+  "results_sorted_by_validation_mae": [
+    {
+      "target_cap": "200",
+      "mae_cycles": 24.8467,
+      "rmse_cycles": 32.5431,
+      "validation_engines": 20,
+      "validation_rows": 4070
+    },
+    {
+      "target_cap": "150",
+      "mae_cycles": 25.5538,
+      "rmse_cycles": 35.8041,
+      "validation_engines": 20,
+      "validation_rows": 4070
+    },
+    {
+      "target_cap": "Uncapped",
+      "mae_cycles": 25.5783,
+      "rmse_cycles": 34.3575,
+      "validation_engines": 20,
+      "validation_rows": 4070
+    },
+    {
+      "target_cap": "125",
+      "mae_cycles": 29.3576,
+      "rmse_cycles": 42.781,
+      "validation_engines": 20,
+      "validation_rows": 4070
+    },
+    {
+      "target_cap": "100",
+      "mae_cycles": 36.839,
+      "rmse_cycles": 53.8621,
+      "validation_engines": 20,
+      "validation_rows": 4070
+    },
+    {
+      "target_cap": "75",
+      "mae_cycles": 48.2618,
+      "rmse_cycles": 68.1326,
+      "validation_engines": 20,
+      "validation_rows": 4070
+    }
+  ],
+  "note": "Validation rows are correlated observations from held-out engines. This is a model-selection experiment, not an official test-set result or aircraft validation."
+}

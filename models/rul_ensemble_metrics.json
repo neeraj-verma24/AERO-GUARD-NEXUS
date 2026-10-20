@@ -1,0 +1,17 @@
+{
+  "dataset": "NASA C-MAPSS FD001",
+  "evaluation": "100 final-cycle test-engine observations",
+  "ensemble_size": 5,
+  "target_cap": 125,
+  "baseline": {
+    "mae": 13.476561639595355,
+    "rmse": 17.607564469101646
+  },
+  "ensemble_mean": {
+    "mae": 13.219446421205571,
+    "rmse": 17.670842926116098
+  },
+  "mean_member_std_cycles": 5.0614,
+  "median_member_std_cycles": 4.4836,
+  "note": "Member spread measures model disagreement only. It is not a calibrated confidence interval or failure probability. FD001 test labels have been used in previous exploratory comparisons."
+}

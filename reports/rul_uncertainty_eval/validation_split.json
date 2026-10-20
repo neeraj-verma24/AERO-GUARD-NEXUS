@@ -1,0 +1,372 @@
+{
+  "generated_at": "2026-10-19T21:02:56+00:00",
+  "evaluation_type": "engine-wise held-out validation split of NASA C-MAPSS FD001 training trajectories",
+  "dataset_scope": "simulated benchmark only; official test labels are not loaded or used",
+  "split": {
+    "method": "GroupShuffleSplit by engine ID",
+    "seed": 5487,
+    "validation_fraction_requested": 0.2,
+    "train_engine_count": 80,
+    "validation_engine_count": 20,
+    "train_engine_ids": [
+      1,
+      2,
+      4,
+      6,
+      7,
+      8,
+      12,
+      13,
+      14,
+      15,
+      16,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      41,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      53,
+      56,
+      57,
+      58,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      79,
+      81,
+      82,
+      83,
+      84,
+      85,
+      87,
+      88,
+      89,
+      90,
+      91,
+      93,
+      94,
+      95,
+      98,
+      99,
+      100
+    ],
+    "validation_engine_ids": [
+      3,
+      5,
+      9,
+      10,
+      11,
+      17,
+      18,
+      26,
+      40,
+      42,
+      52,
+      54,
+      55,
+      59,
+      78,
+      80,
+      86,
+      92,
+      96,
+      97
+    ],
+    "train_row_count": 15999,
+    "validation_row_count": 4632,
+    "engine_overlap_count": 0,
+    "target_cap_cycles": 125
+  },
+  "model": {
+    "kind": "HistGradientBoostingRegressor engine-bootstrap ensemble",
+    "ensemble_size": 5,
+    "parameters": {
+      "max_iter": 160,
+      "learning_rate": 0.08,
+      "max_leaf_nodes": 15,
+      "l2_regularization": 1.0
+    }
+  },
+  "point_prediction_metrics": {
+    "mae_cycles": 9.866,
+    "rmse_cycles": 13.9325,
+    "mean_error_signed_cycles": -4.5234,
+    "n_observations": 4632
+  },
+  "uncertainty_metrics": {
+    "p10_p90_empirical_coverage": 0.2925,
+    "nominal_interval_level": 0.8,
+    "mean_interval_width_cycles": 10.053,
+    "median_interval_width_cycles": 8.1787,
+    "mean_member_disagreement_cycles": 5.2875,
+    "median_member_disagreement_cycles": 4.302,
+    "pearson_disagreement_vs_absolute_error": 0.5142,
+    "spearman_disagreement_vs_absolute_error": 0.6162,
+    "disagreement_bands": [
+      {
+        "band_cycles": "<2",
+        "n_rows": 879,
+        "mae_cycles": 2.2379,
+        "mean_actual_rul_cycles": 101.413
+      },
+      {
+        "band_cycles": "2 to <5",
+        "n_rows": 1736,
+        "mae_cycles": 7.4776,
+        "mean_actual_rul_cycles": 82.4614
+      },
+      {
+        "band_cycles": "5 to <8",
+        "n_rows": 1017,
+        "mae_cycles": 13.4122,
+        "mean_actual_rul_cycles": 90.9095
+      },
+      {
+        "band_cycles": ">=8",
+        "n_rows": 1000,
+        "mae_cycles": 17.1108,
+        "mean_actual_rul_cycles": 96.75
+      }
+    ]
+  },
+  "review_threshold_analysis": {
+    "low_rul_review_threshold_cycles": 30.0,
+    "high_disagreement_review_threshold_cycles": 8.0,
+    "low_rul_flag_rows": 569,
+    "high_disagreement_flag_rows": 1000,
+    "any_review_flag_rows": 1568,
+    "any_review_flag_row_fraction": 0.3385,
+    "flagged_row_mae_cycles": 12.5604,
+    "unflagged_row_mae_cycles": 8.4872,
+    "note": "Rows within each engine are correlated; row-level review coverage is descriptive, not an independent-event rate."
+  },
+  "per_engine_summary": [
+    {
+      "unit": 3,
+      "row_count": 179,
+      "mean_absolute_error_cycles": 7.467298075074408,
+      "mean_disagreement_cycles": 5.916315798004036,
+      "empirical_coverage": 0.5363128491620112,
+      "mean_interval_width_cycles": 11.155772896909296,
+      "review_row_fraction": 0.3687150837988827
+    },
+    {
+      "unit": 5,
+      "row_count": 269,
+      "mean_absolute_error_cycles": 5.8472960003904815,
+      "mean_disagreement_cycles": 4.345059437708572,
+      "empirical_coverage": 0.3420074349442379,
+      "mean_interval_width_cycles": 8.381129636794533,
+      "review_row_fraction": 0.26022304832713755
+    },
+    {
+      "unit": 9,
+      "row_count": 201,
+      "mean_absolute_error_cycles": 6.249063043830827,
+      "mean_disagreement_cycles": 4.170446275113618,
+      "empirical_coverage": 0.3333333333333333,
+      "mean_interval_width_cycles": 7.93730031318151,
+      "review_row_fraction": 0.1791044776119403
+    },
+    {
+      "unit": 10,
+      "row_count": 222,
+      "mean_absolute_error_cycles": 7.86575183473629,
+      "mean_disagreement_cycles": 5.548789459038908,
+      "empirical_coverage": 0.3738738738738739,
+      "mean_interval_width_cycles": 10.700381743930599,
+      "review_row_fraction": 0.36936936936936937
+    },
+    {
+      "unit": 11,
+      "row_count": 240,
+      "mean_absolute_error_cycles": 7.48269352077484,
+      "mean_disagreement_cycles": 5.235514908072201,
+      "empirical_coverage": 0.4041666666666667,
+      "mean_interval_width_cycles": 9.892608926721868,
+      "review_row_fraction": 0.30416666666666664
+    },
+    {
+      "unit": 17,
+      "row_count": 276,
+      "mean_absolute_error_cycles": 9.726526788144893,
+      "mean_disagreement_cycles": 5.325403522882011,
+      "empirical_coverage": 0.33695652173913043,
+      "mean_interval_width_cycles": 10.049891502828915,
+      "review_row_fraction": 0.31521739130434784
+    },
+    {
+      "unit": 18,
+      "row_count": 195,
+      "mean_absolute_error_cycles": 8.043123961951244,
+      "mean_disagreement_cycles": 4.831246499932883,
+      "empirical_coverage": 0.3384615384615385,
+      "mean_interval_width_cycles": 9.08665870370833,
+      "review_row_fraction": 0.2512820512820513
+    },
+    {
+      "unit": 26,
+      "row_count": 199,
+      "mean_absolute_error_cycles": 8.126603392962563,
+      "mean_disagreement_cycles": 4.748521449388822,
+      "empirical_coverage": 0.2562814070351759,
+      "mean_interval_width_cycles": 8.86852646554212,
+      "review_row_fraction": 0.33668341708542715
+    },
+    {
+      "unit": 40,
+      "row_count": 188,
+      "mean_absolute_error_cycles": 8.736794626609319,
+      "mean_disagreement_cycles": 4.7724768427478415,
+      "empirical_coverage": 0.25,
+      "mean_interval_width_cycles": 9.07530579803587,
+      "review_row_fraction": 0.3829787234042553
+    },
+    {
+      "unit": 42,
+      "row_count": 196,
+      "mean_absolute_error_cycles": 12.630358905706286,
+      "mean_disagreement_cycles": 6.481939141457929,
+      "empirical_coverage": 0.14795918367346939,
+      "mean_interval_width_cycles": 12.549605862664242,
+      "review_row_fraction": 0.44387755102040816
+    },
+    {
+      "unit": 52,
+      "row_count": 213,
+      "mean_absolute_error_cycles": 7.033904999099948,
+      "mean_disagreement_cycles": 4.782209096549001,
+      "empirical_coverage": 0.352112676056338,
+      "mean_interval_width_cycles": 9.147656419712636,
+      "review_row_fraction": 0.3474178403755869
+    },
+    {
+      "unit": 54,
+      "row_count": 257,
+      "mean_absolute_error_cycles": 7.180619610247111,
+      "mean_disagreement_cycles": 4.722432444570142,
+      "empirical_coverage": 0.3346303501945525,
+      "mean_interval_width_cycles": 8.973870667089539,
+      "review_row_fraction": 0.20233463035019456
+    },
+    {
+      "unit": 55,
+      "row_count": 193,
+      "mean_absolute_error_cycles": 7.032033281643895,
+      "mean_disagreement_cycles": 5.278812299332327,
+      "empirical_coverage": 0.42487046632124353,
+      "mean_interval_width_cycles": 10.186155539434052,
+      "review_row_fraction": 0.3471502590673575
+    },
+    {
+      "unit": 59,
+      "row_count": 231,
+      "mean_absolute_error_cycles": 5.547335566018513,
+      "mean_disagreement_cycles": 5.168994482561682,
+      "empirical_coverage": 0.36796536796536794,
+      "mean_interval_width_cycles": 9.991710067967981,
+      "review_row_fraction": 0.41125541125541126
+    },
+    {
+      "unit": 78,
+      "row_count": 231,
+      "mean_absolute_error_cycles": 10.526946914580545,
+      "mean_disagreement_cycles": 5.061095873989242,
+      "empirical_coverage": 0.23376623376623376,
+      "mean_interval_width_cycles": 9.755262489793981,
+      "review_row_fraction": 0.3203463203463203
+    },
+    {
+      "unit": 80,
+      "row_count": 185,
+      "mean_absolute_error_cycles": 4.835942436761416,
+      "mean_disagreement_cycles": 3.5586179093524084,
+      "empirical_coverage": 0.4,
+      "mean_interval_width_cycles": 6.827567122100564,
+      "review_row_fraction": 0.1945945945945946
+    },
+    {
+      "unit": 86,
+      "row_count": 278,
+      "mean_absolute_error_cycles": 19.022284804803697,
+      "mean_disagreement_cycles": 5.321589515702972,
+      "empirical_coverage": 0.07913669064748201,
+      "mean_interval_width_cycles": 10.107975892040553,
+      "review_row_fraction": 0.3237410071942446
+    },
+    {
+      "unit": 92,
+      "row_count": 341,
+      "mean_absolute_error_cycles": 16.107962132005905,
+      "mean_disagreement_cycles": 6.855584175614801,
+      "empirical_coverage": 0.12023460410557185,
+      "mean_interval_width_cycles": 12.967562286682169,
+      "review_row_fraction": 0.45454545454545453
+    },
+    {
+      "unit": 96,
+      "row_count": 336,
+      "mean_absolute_error_cycles": 19.004125475464686,
+      "mean_disagreement_cycles": 6.506233490709349,
+      "empirical_coverage": 0.18154761904761904,
+      "mean_interval_width_cycles": 12.112488457293143,
+      "review_row_fraction": 0.49107142857142855
+    },
+    {
+      "unit": 97,
+      "row_count": 202,
+      "mean_absolute_error_cycles": 7.566839245101216,
+      "mean_disagreement_cycles": 5.628309756226522,
+      "empirical_coverage": 0.26732673267326734,
+      "mean_interval_width_cycles": 10.62211135869612,
+      "review_row_fraction": 0.35148514851485146
+    }
+  ],
+  "limitations": [
+    "This is a newly seeded held-out split of the training trajectories, not the previously reported validation split.",
+    "Training trajectories end at failure; row-level validation distribution differs from censored final-cycle test observations.",
+    "Ensemble member p10-p90 percentiles are not automatically calibrated prediction intervals.",
+    "Coverage is empirical on this held-out split only and is not a guarantee of future coverage.",
+    "No real aircraft validation or maintenance-clearance decision is supported by this report."
+  ]
+}

@@ -1,0 +1,9 @@
+# Step 75 deployment dependencies (added only when absent)
+fastapi>=0.115,<1
+uvicorn[standard]>=0.34,<1
+numpy>=1.26,<3
+pandas>=2.2,<3
+scikit-learn>=1.5,<2
+joblib>=1.4,<2
+ortools>=9.10,<10
+pypdf>=5,<7

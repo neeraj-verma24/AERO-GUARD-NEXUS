@@ -1,0 +1,53 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Local databases
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+*.db-shm
+*.db-wal
+
+# Backup and temporary files
+*.backup-*
+*.pre-step*
+*.bak
+*_backup_*
+notepad
+
+# Logs and temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Temporary development and patch packages
+README_STEP*.txt
+STEP*_README.txt
+add_step*.py
+aero_guard_*patch.py
+fix_step*.py
+verify_step*.py
+step63_bundle/
+step70_header_wrap_pkg/
+step72_provenance_fix_pkg/
+step73_bundle/
+step74_elite_ui_pkg/
+step74_submission_cleanup_pkg/
+step74_submission_cleanup_v2_pkg/
+step74_ui_redesign_pkg/
+step75_deploy_package/

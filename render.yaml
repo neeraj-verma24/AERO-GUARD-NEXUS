@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: aero-guard-nexus-api
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: AERO_GUARD_CORS_ORIGINS
+        value: "*"
+      - key: AERO_GUARD_DEMO_READ_ONLY
+        value: "true"

@@ -1,0 +1,241 @@
+{
+  "generated_at": "2026-10-20T11:24:19.151323+00:00",
+  "step": 72,
+  "base_url": "http://127.0.0.1:8000",
+  "rag_query_tests_requested": true,
+  "summary": {
+    "PASS": 45,
+    "WARN": 0,
+    "FAIL": 0
+  },
+  "overall": "PASS",
+  "production_ready": false,
+  "note": "Prototype integration evidence only; not aircraft maintenance approval or safety certification.",
+  "checks": [
+    {
+      "status": "PASS",
+      "check": "GET /health",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/system",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/summary",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/assets",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/work-orders",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/spares",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/model-metrics",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/physics-check/rules-status",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/evidence-gate/latest",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/rag/status",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/parts/assessment",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/scheduling/latest",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/digital-twin/latest",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/parts/decision-audit?limit=50",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/rag/audit-log?limit=20",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/rul-predictions",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "Frontend React source exists",
+      "detail": "frontend\\src\\App.jsx"
+    },
+    {
+      "status": "PASS",
+      "check": "Frontend CSS exists",
+      "detail": "frontend\\src\\App.css"
+    },
+    {
+      "status": "PASS",
+      "check": "Production build entry exists",
+      "detail": "frontend\\dist\\index.html"
+    },
+    {
+      "status": "PASS",
+      "check": "Mechanic Co-Pilot is wired to local RAG query",
+      "detail": "RAG query endpoint reference found"
+    },
+    {
+      "status": "PASS",
+      "check": "System Assurance page is present",
+      "detail": "Navigation/page label found"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL prediction list is non-empty",
+      "detail": "100 predictions returned"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL field predicted_rul_cycles stays within [0,125]",
+      "detail": "min=7.34, max=124.78, out-of-range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL field baseline_rul_cycles stays within [0,125]",
+      "detail": "min=5.61, max=125.00, out-of-range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL field member_prediction_p10_cycles stays within [0,125]",
+      "detail": "min=2.66, max=124.34, out-of-range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL field member_prediction_p90_cycles stays within [0,125]",
+      "detail": "min=7.77, max=125.00, out-of-range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL uncertainty disclaimer remains explicit",
+      "detail": "Standard deviation across ensemble member predictions; not a calibrated confidence interval."
+    },
+    {
+      "status": "PASS",
+      "check": "Physics rule status is explicit",
+      "detail": "status=NO_APPROVED_PHYSICAL_RULES_CONFIGURED; rule_count=0"
+    },
+    {
+      "status": "PASS",
+      "check": "Physics rule source uses simulated benchmark context",
+      "detail": "simulated_engine_benchmark"
+    },
+    {
+      "status": "PASS",
+      "check": "No unapproved engineering rules implicitly configured",
+      "detail": "configured rule_count=0"
+    },
+    {
+      "status": "PASS",
+      "check": "Parts assessment does not grant scheduling clearance",
+      "detail": "scheduling_clearance=False"
+    },
+    {
+      "status": "PASS",
+      "check": "Parts assessment does not claim stock reservation",
+      "detail": "stock_reservations_created=False"
+    },
+    {
+      "status": "PASS",
+      "check": "SP-118 sufficient-stock arithmetic",
+      "detail": "stock=3; demand=2; shortage=0; status=STOCK_SUFFICIENT_NOT_RESERVED"
+    },
+    {
+      "status": "PASS",
+      "check": "SP-306 aggregate shortage is visible",
+      "detail": "stock=0; demand=1; shortage=1; status=AGGREGATE_SHORTAGE"
+    },
+    {
+      "status": "PASS",
+      "check": "Latest schedule remains proposal-only",
+      "detail": "PROPOSED_PENDING_PARTS_VERIFICATION"
+    },
+    {
+      "status": "PASS",
+      "check": "Latest schedule operational clearance is false",
+      "detail": "operational_clearance=False"
+    },
+    {
+      "status": "PASS",
+      "check": "Scheduler parts gate is blocked",
+      "detail": "gate_status=BLOCKED_REVIEW_REQUIRED"
+    },
+    {
+      "status": "PASS",
+      "check": "Latest Digital Twin snapshot is non-empty",
+      "detail": "run_id=ed937f82-d558-40fb-ac21-9a7c3b6562a9"
+    },
+    {
+      "status": "PASS",
+      "check": "Digital Twin scenarios carry blocked parts gates",
+      "detail": "scenarios=4"
+    },
+    {
+      "status": "PASS",
+      "check": "Parts decision audit is readable",
+      "detail": "count=4; items=4"
+    },
+    {
+      "status": "PASS",
+      "check": "RAG audit log is readable",
+      "detail": "count=13; items=13"
+    },
+    {
+      "status": "PASS",
+      "check": "RAG query abstains when no supported passage meets threshold",
+      "detail": "HTTP 200; decision=INSUFFICIENT_EVIDENCE; audit_id=d265ec44-adfb-4aed-8e73-495b99b03e3a"
+    },
+    {
+      "status": "PASS",
+      "check": "RAG retrieves matching unverified sample passages",
+      "detail": "HTTP 200; decision=UNVERIFIED_SOURCE_MATCH; result_count=2; audit_id=994b392e-dade-4283-a29e-bb0705c38d91"
+    },
+    {
+      "status": "PASS",
+      "check": "Unverified test passages are not authoritative-eligible",
+      "detail": "sources=2; approval_statuses=['None']"
+    },
+    {
+      "status": "PASS",
+      "check": "Both RAG acceptance queries appear in audit log",
+      "detail": "HTTP 200; expected_ids=['994b392e-dade-4283-a29e-bb0705c38d91', 'd265ec44-adfb-4aed-8e73-495b99b03e3a']; recent_records=15"
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "title": "AERO-GUARD NEXUS \u2014 Step 73 Demo Readiness",
+  "generated_utc": "2026-10-20T11:47:48+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "mode": "read-only GET checks; no RAG POST queries",
+  "overall": "DEMO_READY_WITH_LIMITATIONS",
+  "production_readiness": "NO \u2014 prototype limitations remain",
+  "summary": {
+    "pass": 37,
+    "warn": 2,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "status": "PASS",
+      "check": "GET /health",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/system",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/summary",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/assets",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/work-orders",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/spares",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/model-metrics",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/physics-check/rules-status",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/evidence-gate/latest",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/rag/status",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/parts/assessment",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/scheduling/latest",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/digital-twin/latest",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/parts/decision-audit?limit=50",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/rag/audit-log?limit=20",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "GET /api/v1/ai/rul-predictions",
+      "detail": "HTTP 200"
+    },
+    {
+      "status": "PASS",
+      "check": "File frontend/src/App.jsx",
+      "detail": "present"
+    },
+    {
+      "status": "PASS",
+      "check": "File frontend/src/App.css",
+      "detail": "present"
+    },
+    {
+      "status": "PASS",
+      "check": "File frontend/dist/index.html",
+      "detail": "present"
+    },
+    {
+      "status": "PASS",
+      "check": "Mechanic Co-Pilot references local RAG query endpoint",
+      "detail": "reference found"
+    },
+    {
+      "status": "PASS",
+      "check": "System Assurance page is present",
+      "detail": "reference found"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL predictions non-empty",
+      "detail": "count=100"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL predicted_rul_cycles within [0,125]",
+      "detail": "valid=100; malformed=0; min=7.34; max=124.78; out_of_range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL baseline_rul_cycles within [0,125]",
+      "detail": "valid=100; malformed=0; min=5.61; max=125.00; out_of_range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL member_prediction_p10_cycles within [0,125]",
+      "detail": "valid=100; malformed=0; min=2.66; max=124.34; out_of_range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL member_prediction_p90_cycles within [0,125]",
+      "detail": "valid=100; malformed=0; min=7.77; max=125.00; out_of_range=0"
+    },
+    {
+      "status": "PASS",
+      "check": "RUL uncertainty limitation shown",
+      "detail": "Standard deviation across ensemble member predictions; not a calibrated confidence interval."
+    },
+    {
+      "status": "WARN",
+      "check": "Engineering rule registry",
+      "detail": "zero approved rules configured; expected blocker, not a failed API check"
+    },
+    {
+      "status": "PASS",
+      "check": "Parts assessment does not grant scheduling clearance",
+      "detail": "observed=False"
+    },
+    {
+      "status": "PASS",
+      "check": "Parts assessment does not claim stock reservation",
+      "detail": "observed=False"
+    },
+    {
+      "status": "WARN",
+      "check": "Unmapped work orders are visible",
+      "detail": "count=1"
+    },
+    {
+      "status": "PASS",
+      "check": "Latest schedule remains proposal-only",
+      "detail": "PROPOSED_PENDING_PARTS_VERIFICATION"
+    },
+    {
+      "status": "PASS",
+      "check": "Schedule operational clearance is false",
+      "detail": "observed=False"
+    },
+    {
+      "status": "PASS",
+      "check": "Schedule parts gate is blocked",
+      "detail": "gate_status=BLOCKED_REVIEW_REQUIRED"
+    },
+    {
+      "status": "PASS",
+      "check": "Latest Digital Twin snapshot",
+      "detail": "run_id=ed937f82-d558-40fb-ac21-9a7c3b6562a9"
+    },
+    {
+      "status": "PASS",
+      "check": "Digital Twin gate remains blocked",
+      "detail": "gate_status=BLOCKED_REVIEW_REQUIRED"
+    },
+    {
+      "status": "PASS",
+      "check": "Digital Twin scenario gate fields",
+      "detail": "scenarios=4; all_blocked=True"
+    },
+    {
+      "status": "PASS",
+      "check": "RAG audit log is readable",
+      "detail": "count=18; items=18"
+    },
+    {
+      "status": "PASS",
+      "check": "Parts decision audit is readable",
+      "detail": "count=4; items=4"
+    }
+  ],
+  "known_limitations": [
+    "NASA C-MAPSS FD001 is simulated benchmark data, not real aircraft telemetry.",
+    "RUL ensemble spread is not a calibrated confidence interval.",
+    "No approved engineering physical rules are configured.",
+    "Parts demo mappings do not establish approved BOMs or stock reservation.",
+    "Scheduler and Digital Twin remain proposal/scenario tools with clearance blocked.",
+    "RAG approval/provenance metadata is user-supplied and not independently authenticated."
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "generated_at": "2026-10-19T20:51:26+00:00",
+  "evaluation_type": "exploratory model-error and ensemble-disagreement analysis",
+  "input_file": "C:\\Users\\verma\\aero-guard-nexus\\models\\rul_ensemble_predictions.csv",
+  "dataset": "NASA C-MAPSS FD001",
+  "data_type": "simulated_engine_benchmark",
+  "valid_rows": 100,
+  "rows_dropped_for_missing_or_invalid_numeric_data": 0,
+  "metrics": {
+    "baseline": {
+      "mae_cycles": 13.4762,
+      "rmse_cycles": 17.607426,
+      "mean_signed_error_cycles": 0.4906,
+      "median_absolute_error_cycles": 10.37
+    },
+    "ensemble_mean": {
+      "mae_cycles": 13.219,
+      "rmse_cycles": 17.670351,
+      "mean_signed_error_cycles": 0.0624,
+      "median_absolute_error_cycles": 9.335
+    },
+    "ensemble_mae_improvement_over_baseline_cycles": 0.2572,
+    "ensemble_rmse_change_vs_baseline_cycles_positive_means_worse": 0.062925,
+    "absolute_error_vs_disagreement_pearson_correlation": 0.282467,
+    "absolute_error_vs_disagreement_spearman_correlation": 0.252736,
+    "member_p10_p90_empirical_test_label_coverage": 0.26,
+    "member_p10_p90_mean_width_cycles": 9.7544,
+    "member_p10_p90_median_width_cycles": 8.645,
+    "member_p10_p90_inside_count": 26,
+    "member_p10_p90_outside_count": 74
+  },
+  "prototype_review_threshold_diagnostics": {
+    "low_rul_review_threshold_cycles": 30.0,
+    "high_disagreement_review_threshold_cycles": 8.0,
+    "reviewed_count": 36,
+    "review_rate": 0.36,
+    "low_rul_trigger_count": 17,
+    "high_disagreement_trigger_count": 19,
+    "actual_rul_le_30_count": 25,
+    "actual_low_rul_captured_by_any_prototype_trigger": 18,
+    "diagnostic_capture_rate_of_actual_rul_le_30": 0.72,
+    "review_flags_where_actual_rul_gt_30_count": 18,
+    "note": "Diagnostic only on previously explored FD001 test labels. Review flags are not safety classifications, and thresholds are not validated operational limits."
+  },
+  "disagreement_bands": [
+    {
+      "band": "<2 cycles",
+      "count": 15,
+      "mean_disagreement_cycles": 1.366,
+      "mae_cycles": 7.874,
+      "rmse_cycles": 9.880454,
+      "median_absolute_error_cycles": 5.96
+    },
+    {
+      "band": "2 to <5 cycles",
+      "count": 41,
+      "mean_disagreement_cycles": 3.47122,
+      "mae_cycles": 11.521951,
+      "rmse_cycles": 16.476406,
+      "median_absolute_error_cycles": 8.21
+    },
+    {
+      "band": "5 to <8 cycles",
+      "count": 25,
+      "mean_disagreement_cycles": 6.1848,
+      "mae_cycles": 15.894,
+      "rmse_cycles": 19.669908,
+      "median_absolute_error_cycles": 11.81
+    },
+    {
+      "band": ">=8 cycles",
+      "count": 19,
+      "mean_disagreement_cycles": 9.931579,
+      "mae_cycles": 17.581053,
+      "rmse_cycles": 21.711989,
+      "median_absolute_error_cycles": 17.16
+    }
+  ],
+  "interpretation_limits": [
+    "Ensemble standard deviation is model disagreement, not a calibrated confidence interval or failure probability.",
+    "Member p10/p90 are quantiles across only five ensemble models; empirical label coverage is descriptive and not proof of statistical calibration.",
+    "FD001 test labels were used in prior exploratory model comparisons; these numbers are not an untouched final benchmark.",
+    "NASA C-MAPSS FD001 is a simulated benchmark, not real military aircraft data.",
+    "Low-RUL/disagreement thresholds are prototype review rules, not approved maintenance or airworthiness limits."
+  ]
+}

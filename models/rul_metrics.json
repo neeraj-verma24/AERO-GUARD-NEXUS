@@ -1,0 +1,18 @@
+{
+  "dataset": "NASA C-MAPSS FD001",
+  "data_type": "simulated_engine_benchmark",
+  "validation": {
+    "mae": 10.358908214771708,
+    "rmse": 15.265521153852973
+  },
+  "official_test": {
+    "mae": 13.476561639595355,
+    "rmse": 17.607564469101646
+  },
+  "training_rows": 20631,
+  "training_engines": 100,
+  "test_engines": 100,
+  "feature_count": 67,
+  "validation_method": "GroupShuffleSplit by engine ID",
+  "rul_target_cap": 125
+}

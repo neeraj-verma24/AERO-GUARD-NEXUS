@@ -1,0 +1,20 @@
+{
+  "dataset": "NASA C-MAPSS FD001",
+  "evaluation": "same official test labels",
+  "test_engines": 100,
+  "current_model": {
+    "target": "RUL capped at 125 cycles",
+    "mae": 13.476561639595355,
+    "rmse": 17.607564469101646
+  },
+  "alternative_model": {
+    "target": "uncapped training RUL",
+    "mae": 19.043901864467333,
+    "rmse": 25.538854018730547
+  },
+  "delta_uncapped_minus_capped": {
+    "mae_cycles": 5.5673,
+    "rmse_cycles": 7.9313
+  },
+  "note": "Exploratory experiment using a NASA simulated benchmark; not validation for real aircraft."
+}

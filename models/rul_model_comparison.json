@@ -1,0 +1,35 @@
+{
+  "dataset": "NASA C-MAPSS FD001",
+  "evaluation_type": "official test RUL labels",
+  "test_engines": 100,
+  "primary_metric": "MAE in cycles; lower is better",
+  "results": {
+    "AERO-GUARD ML": {
+      "mae": 13.476561639595355,
+      "rmse": 17.607564469101646
+    },
+    "Training-mean baseline": {
+      "mae": 35.9,
+      "rmse": 43.06703554245684
+    },
+    "Fixed-125 baseline": {
+      "mae": 51.62,
+      "rmse": 64.61532326004414
+    }
+  },
+  "improvement_vs_baselines": {
+    "Training-mean baseline": {
+      "mae_reduction_percent": 62.46,
+      "rmse_reduction_percent": 59.12
+    },
+    "Fixed-125 baseline": {
+      "mae_reduction_percent": 73.89,
+      "rmse_reduction_percent": 72.75
+    }
+  },
+  "limitations": [
+    "NASA simulated benchmark only",
+    "Not validated for real military aircraft",
+    "Simple baselines are comparison references, not state-of-the-art models"
+  ]
+}

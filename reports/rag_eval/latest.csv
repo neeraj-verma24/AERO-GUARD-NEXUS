@@ -1,0 +1,7 @@
+﻿id,query,expected_match,expected_sources,expected_decision,actual_decision,result_count,returned_sources,expected_source_found,case_pass,audit_id,top_scores
+positive_hydraulic_inspection,hydraulic inspection leakage record,True,"[""sample_maintenance_notes.md""]",SOURCE_MATCH,UNVERIFIED_SOURCE_MATCH,3,"[""sample_maintenance_notes.md""]",True,True,73bbf080-0226-4f0a-945a-efb444dc14d1,"[0.5062, 0.5, 0.3375]"
+positive_changed_content,additional fictional text document change invalidation,True,"[""sample_maintenance_notes.md""]",SOURCE_MATCH,UNVERIFIED_SOURCE_MATCH,3,"[""sample_maintenance_notes.md""]",True,True,9fc2454e-bef0-4c43-acf4-88bbea566705,"[0.3917, 0.2467, 0.1396]"
+positive_observed_leakage,inspection record observed leakage review,True,"[""sample_maintenance_notes.md""]",SOURCE_MATCH,UNVERIFIED_SOURCE_MATCH,3,"[""sample_maintenance_notes.md""]",True,True,6eac504f-e4c9-4692-83f0-fe6a26bf855e,"[0.605, 0.1783, 0.135]"
+negative_torque_specification,turbine blade replacement torque specification,False,[],INSUFFICIENT_EVIDENCE,INSUFFICIENT_EVIDENCE,0,[],False,True,9eff0627-ba4a-4e47-a80d-a2d9abbf1989,[]
+negative_unrelated_terms,quantum microwave lunar gearbox,False,[],INSUFFICIENT_EVIDENCE,INSUFFICIENT_EVIDENCE,0,[],False,True,e819b87c-08cb-4e65-8d8f-851e5b358e17,[]
+negative_avionics_parameters,avionics impedance capacitor orbital harmonics,False,[],INSUFFICIENT_EVIDENCE,INSUFFICIENT_EVIDENCE,0,[],False,True,ebc2899a-0157-4b45-97d0-d3105f6a57b2,[]

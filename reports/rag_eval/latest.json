@@ -1,0 +1,206 @@
+{
+  "report_generated_at": "2026-10-19T20:03:16+00:00",
+  "evaluation_type": "query-level lexical retrieval regression test",
+  "dataset_scope": "fictional sample document only; not an aviation-manual benchmark",
+  "document_index": {
+    "document_count": 1,
+    "chunk_count": 7,
+    "expected_sample_source": "sample_maintenance_notes.md",
+    "sample_approval_status": "UNVERIFIED",
+    "sample_authoritative_eligible": false,
+    "min_score_threshold": 0.12
+  },
+  "metrics": {
+    "case_count": 6,
+    "passed_cases": 6,
+    "pass_rate": 1.0,
+    "true_positive": 3,
+    "false_positive": 0,
+    "false_negative": 0,
+    "true_negative": 3,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "accuracy": 1.0,
+    "negative_case_count": 3,
+    "correct_abstentions": 3,
+    "abstention_accuracy_on_negative_cases": 1.0
+  },
+  "approval_guard": {
+    "checks": [
+      {
+        "query_id": "positive_hydraulic_inspection",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_hydraulic_inspection",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_hydraulic_inspection",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_changed_content",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_changed_content",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_changed_content",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_observed_leakage",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_observed_leakage",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      },
+      {
+        "query_id": "positive_observed_leakage",
+        "approval_status": "UNVERIFIED",
+        "authoritative_eligible": false,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "note": "Checks that matching fictional sample passages remain UNVERIFIED and non-authoritative; does not authenticate the source."
+  },
+  "cases": [
+    {
+      "id": "positive_hydraulic_inspection",
+      "query": "hydraulic inspection leakage record",
+      "expected_match": true,
+      "expected_sources": [
+        "sample_maintenance_notes.md"
+      ],
+      "expected_decision": "SOURCE_MATCH",
+      "actual_decision": "UNVERIFIED_SOURCE_MATCH",
+      "result_count": 3,
+      "returned_sources": [
+        "sample_maintenance_notes.md"
+      ],
+      "expected_source_found": true,
+      "case_pass": true,
+      "audit_id": "73bbf080-0226-4f0a-945a-efb444dc14d1",
+      "top_scores": [
+        0.5062,
+        0.5,
+        0.3375
+      ]
+    },
+    {
+      "id": "positive_changed_content",
+      "query": "additional fictional text document change invalidation",
+      "expected_match": true,
+      "expected_sources": [
+        "sample_maintenance_notes.md"
+      ],
+      "expected_decision": "SOURCE_MATCH",
+      "actual_decision": "UNVERIFIED_SOURCE_MATCH",
+      "result_count": 3,
+      "returned_sources": [
+        "sample_maintenance_notes.md"
+      ],
+      "expected_source_found": true,
+      "case_pass": true,
+      "audit_id": "9fc2454e-bef0-4c43-acf4-88bbea566705",
+      "top_scores": [
+        0.3917,
+        0.2467,
+        0.1396
+      ]
+    },
+    {
+      "id": "positive_observed_leakage",
+      "query": "inspection record observed leakage review",
+      "expected_match": true,
+      "expected_sources": [
+        "sample_maintenance_notes.md"
+      ],
+      "expected_decision": "SOURCE_MATCH",
+      "actual_decision": "UNVERIFIED_SOURCE_MATCH",
+      "result_count": 3,
+      "returned_sources": [
+        "sample_maintenance_notes.md"
+      ],
+      "expected_source_found": true,
+      "case_pass": true,
+      "audit_id": "6eac504f-e4c9-4692-83f0-fe6a26bf855e",
+      "top_scores": [
+        0.605,
+        0.1783,
+        0.135
+      ]
+    },
+    {
+      "id": "negative_torque_specification",
+      "query": "turbine blade replacement torque specification",
+      "expected_match": false,
+      "expected_sources": [],
+      "expected_decision": "INSUFFICIENT_EVIDENCE",
+      "actual_decision": "INSUFFICIENT_EVIDENCE",
+      "result_count": 0,
+      "returned_sources": [],
+      "expected_source_found": false,
+      "case_pass": true,
+      "audit_id": "9eff0627-ba4a-4e47-a80d-a2d9abbf1989",
+      "top_scores": []
+    },
+    {
+      "id": "negative_unrelated_terms",
+      "query": "quantum microwave lunar gearbox",
+      "expected_match": false,
+      "expected_sources": [],
+      "expected_decision": "INSUFFICIENT_EVIDENCE",
+      "actual_decision": "INSUFFICIENT_EVIDENCE",
+      "result_count": 0,
+      "returned_sources": [],
+      "expected_source_found": false,
+      "case_pass": true,
+      "audit_id": "e819b87c-08cb-4e65-8d8f-851e5b358e17",
+      "top_scores": []
+    },
+    {
+      "id": "negative_avionics_parameters",
+      "query": "avionics impedance capacitor orbital harmonics",
+      "expected_match": false,
+      "expected_sources": [],
+      "expected_decision": "INSUFFICIENT_EVIDENCE",
+      "actual_decision": "INSUFFICIENT_EVIDENCE",
+      "result_count": 0,
+      "returned_sources": [],
+      "expected_source_found": false,
+      "case_pass": true,
+      "audit_id": "ebc2899a-0157-4b45-97d0-d3105f6a57b2",
+      "top_scores": []
+    }
+  ],
+  "limitations": [
+    "Small hand-labelled synthetic query set; query-level rather than corpus-wide passage metrics.",
+    "Token-overlap ranking is lexical; semantically similar terms may not match.",
+    "Results do not measure real maintenance-manual quality or establish safety.",
+    "Source metadata is user-supplied and is not independently authenticated.",
+    "Running evaluation appends queries to rag_query_audit."
+  ]
+}

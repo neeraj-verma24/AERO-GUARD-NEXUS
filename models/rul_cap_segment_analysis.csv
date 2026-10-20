@@ -1,0 +1,7 @@
+rul_band,model,engine_count,mae_cycles,rmse_cycles
+Low RUL (<=30),Capped-target model,25,8.2312,12.425
+Low RUL (<=30),Uncapped-target model,25,8.558,12.6782
+Medium RUL (31-125),Capped-target model,64,13.4506,16.9742
+Medium RUL (31-125),Uncapped-target model,64,22.6094,29.1252
+High RUL (>125),Capped-target model,11,25.5455,28.1274
+High RUL (>125),Uncapped-target model,11,22.1318,25.0746
