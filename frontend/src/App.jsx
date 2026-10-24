@@ -340,6 +340,7 @@ function Overview({
   simulatedFault,
   onToggleFault,
   backendOnline,
+  backendStatus,
   databaseOnline,
   assetsData,
   assetsLoading,
@@ -616,6 +617,8 @@ function Overview({
 
             {backendOnline ? (
               <CheckCircle2 className="success-icon" size={21} />
+            ) : backendStatus === "waking" ? (
+              <span className="backend-status-spinner" role="status" aria-label="Backend waking up" />
             ) : (
               <WifiOff className="warning-icon" size={21} />
             )}
@@ -627,8 +630,8 @@ function Overview({
               Backend API
             </span>
 
-            <StatusBadge tone={backendOnline ? "green" : "amber"}>
-              {backendOnline ? "Connected" : "Unavailable"}
+            <StatusBadge tone={backendOnline ? "green" : backendStatus === "waking" ? "blue" : "amber"}>
+              {backendOnline ? "Connected" : backendStatus === "waking" ? "Waking up..." : "Unavailable"}
             </StatusBadge>
           </div>
 
@@ -638,8 +641,8 @@ function Overview({
               SQLite database
             </span>
 
-            <StatusBadge tone={databaseOnline ? "green" : "amber"}>
-              {databaseOnline ? "Connected" : "Unavailable"}
+            <StatusBadge tone={databaseOnline ? "green" : backendStatus === "waking" ? "blue" : "amber"}>
+              {databaseOnline ? "Connected" : backendStatus === "waking" ? "Waiting..." : "Unavailable"}
             </StatusBadge>
           </div>
 
@@ -2032,11 +2035,13 @@ function Copilot() {
   );
 }
 
+/* Backend waking status patch v2 */
 function App() {
   const [page, setPage] = useState("overview");
   const [simulatedFault, setSimulatedFault] = useState(false);
-  const [backendOnline, setBackendOnline] = useState(false);
+  const [backendStatus, setBackendStatus] = useState("waking");
   const [databaseOnline, setDatabaseOnline] = useState(false);
+  const backendOnline = backendStatus === "online";
   const [notificationOpen, setNotificationOpen] = useState(false);
 
   const assets = useApiList("/api/v1/assets");
@@ -2047,10 +2052,19 @@ function App() {
 
   useEffect(() => {
     let active = true;
+    let timer = null;
+    let hasConnected = false;
+    const startedAt = Date.now();
+    const startupGraceMs = 120000;
 
     async function checkBackend() {
+      const controller = new AbortController();
+      const requestTimeout = window.setTimeout(() => controller.abort(), 20000);
+
       try {
-        const response = await fetch(`${API_BASE}/health`);
+        const response = await fetch(`${API_BASE}/health`, {
+          signal: controller.signal,
+        });
 
         if (!response.ok) {
           throw new Error("Health check failed");
@@ -2059,24 +2073,42 @@ function App() {
         const payload = await response.json();
 
         if (active) {
-          setBackendOnline(payload.status === "healthy");
-          setDatabaseOnline(payload.database === "connected");
+          if (payload.status === "healthy") {
+            hasConnected = true;
+            setBackendStatus("online");
+            setDatabaseOnline(payload.database === "connected");
+          } else {
+            setDatabaseOnline(false);
+            setBackendStatus(
+              hasConnected || Date.now() - startedAt >= startupGraceMs
+                ? "offline"
+                : "waking"
+            );
+          }
         }
       } catch {
         if (active) {
-          setBackendOnline(false);
           setDatabaseOnline(false);
+          setBackendStatus(
+            hasConnected || Date.now() - startedAt >= startupGraceMs
+              ? "offline"
+              : "waking"
+          );
+        }
+      } finally {
+        window.clearTimeout(requestTimeout);
+        if (active) {
+          // Avoid overlapping health checks while a sleeping service starts.
+          timer = window.setTimeout(checkBackend, 8000);
         }
       }
     }
 
-    checkBackend();
-
-    const timer = window.setInterval(checkBackend, 10000);
+    void checkBackend();
 
     return () => {
       active = false;
-      window.clearInterval(timer);
+      if (timer !== null) window.clearTimeout(timer);
     };
   }, []);
 
@@ -2130,14 +2162,18 @@ function App() {
             SYSTEM CONNECTIVITY
           </div>
 
-          <strong>
-            {backendOnline ? "API connected" : "API unavailable"}
+          <strong className={backendStatus === "waking" ? "backend-status-waking" : ""}>
+            {backendOnline ? "API connected" : backendStatus === "waking" ? (
+              <><span className="backend-status-spinner" aria-hidden="true" /> Waking up...</>
+            ) : "API unavailable"}
           </strong>
 
           <span>
             {databaseOnline
               ? "Database connected"
-              : "Database unavailable"}
+              : backendStatus === "waking"
+                ? "Waiting for backend..."
+                : "Database unavailable"}
           </span>
 
           <div className="edge-divider" />
@@ -2171,18 +2207,22 @@ function App() {
           <div className="topbar-actions">
             <div
               className={`connection-pill ${
-                backendOnline ? "connected" : "disconnected"
+                backendOnline ? "connected" : backendStatus === "waking" ? "waking" : "disconnected"
               }`}
             >
               {backendOnline ? (
                 <Wifi size={15} />
+              ) : backendStatus === "waking" ? (
+                <span className="backend-status-spinner" aria-hidden="true" />
               ) : (
                 <WifiOff size={15} />
               )}
 
               {backendOnline
                 ? "BACKEND CONNECTED"
-                : "BACKEND OFFLINE"}
+                : backendStatus === "waking"
+                  ? "WAKING UP..."
+                  : "BACKEND OFFLINE"}
             </div>
 
             <button
@@ -2246,6 +2286,7 @@ function App() {
                 setSimulatedFault((value) => !value)
               }
               backendOnline={backendOnline}
+              backendStatus={backendStatus}
               databaseOnline={databaseOnline}
               assetsData={assets.items}
               assetsLoading={assets.loading}
