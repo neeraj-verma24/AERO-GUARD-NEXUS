@@ -10,10 +10,10 @@ from io import BytesIO
 import hashlib
 import json
 import re
-import sqlite3
 import uuid
+from contextlib import contextmanager
 
-from backend.database import DB_PATH
+from backend.database import DB_PATH, get_connection
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DOCUMENTS_DIR = PROJECT_ROOT / "data" / "manuals"
@@ -36,12 +36,16 @@ STOP_WORDS = {
 def _now():
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
+@contextmanager
 def _connect():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH, timeout=15)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    """Use the shared connection factory and always close the connection."""
+    conn = get_connection()
+    try:
+        # Preserve sqlite3 context-manager commit/rollback semantics.
+        with conn:
+            yield conn
+    finally:
+        conn.close()
 
 def _ensure_tables(conn):
     conn.executescript("""
