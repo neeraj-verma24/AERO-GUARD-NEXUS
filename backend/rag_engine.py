@@ -67,6 +67,20 @@ def _ensure_tables(conn):
         decision TEXT NOT NULL, result_count INTEGER NOT NULL, min_score REAL NOT NULL,
         sources_json TEXT NOT NULL, reason TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS rag_metadata_audit (
+        audit_id TEXT PRIMARY KEY,
+        relative_path TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        changed_at TEXT NOT NULL,
+        previous_sha256 TEXT,
+        current_sha256 TEXT,
+        changed_fields_json TEXT NOT NULL,
+        previous_metadata_json TEXT NOT NULL,
+        new_metadata_json TEXT NOT NULL,
+        note TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_rag_metadata_audit_path_time
+        ON rag_metadata_audit(relative_path, changed_at);
     """)
     # Additive migration: never drop or rebuild current documents/chunks/audit rows.
     columns = {row["name"] for row in conn.execute("PRAGMA table_info(rag_documents)")}
@@ -269,8 +283,30 @@ def update_document_metadata(relative_path, metadata):
             value = candidate.get(field)
             if value is not None and len(str(value)) > limit:
                 raise ValueError(f"{field} must be {limit} characters or fewer.")
+        # Store a before/after audit record in the same transaction as the metadata update.
+        audit_fields = sorted(allowed)
+        previous_metadata = {key: row[key] for key in audit_fields}
+        new_metadata = {key: candidate[key] for key in audit_fields}
+        changed_fields = [key for key in audit_fields if previous_metadata[key] != new_metadata[key]]
+        changed_at = _now()
+        event_type = "METADATA_UPDATED" if changed_fields else "NO_CHANGE"
+        audit_note = (
+            "Metadata values are user-supplied and are not independently authenticated; "
+            "this record does not establish reviewer identity or safety certification."
+        )
+        conn.execute(
+            """INSERT INTO rag_metadata_audit
+               (audit_id, relative_path, event_type, changed_at, previous_sha256,
+                current_sha256, changed_fields_json, previous_metadata_json,
+                new_metadata_json, note)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (str(uuid.uuid4()), relative_path, event_type, changed_at,
+             row["sha256"], row["sha256"], json.dumps(changed_fields),
+             json.dumps(previous_metadata, sort_keys=True),
+             json.dumps(new_metadata, sort_keys=True), audit_note),
+        )
         to_update = {key: candidate[key] for key in allowed}
-        to_update["metadata_updated_at"] = _now()
+        to_update["metadata_updated_at"] = changed_at
         assignments = ", ".join(f"{key} = ?" for key in to_update)
         conn.execute(f"UPDATE rag_documents SET {assignments} WHERE relative_path = ?",
                      [*to_update.values(), relative_path])
@@ -460,3 +496,51 @@ def get_rag_audit_log(limit=20):
         item["sources"] = json.loads(item.pop("sources_json"))
         items.append(item)
     return {"count": len(items), "items": items}
+
+
+def get_rag_metadata_audit(relative_path=None, limit=50):
+    """Return document metadata changes with before/after values; identity is not authenticated."""
+    limit = max(1, min(int(limit), 200))
+    normalized_path = None
+    if relative_path is not None:
+        normalized_path = (relative_path or "").replace("\\", "/").strip()
+        if (not normalized_path or normalized_path.startswith("/")
+                or ".." in Path(normalized_path).parts):
+            raise ValueError("relative_path must identify a file inside data/manuals.")
+    with _connect() as conn:
+        _ensure_tables(conn)
+        if normalized_path is None:
+            rows = conn.execute("""SELECT audit_id, relative_path, event_type, changed_at,
+                previous_sha256, current_sha256, changed_fields_json,
+                previous_metadata_json, new_metadata_json, note
+                FROM rag_metadata_audit ORDER BY changed_at DESC, rowid DESC LIMIT ?""",
+                (limit,)).fetchall()
+        else:
+            rows = conn.execute("""SELECT audit_id, relative_path, event_type, changed_at,
+                previous_sha256, current_sha256, changed_fields_json,
+                previous_metadata_json, new_metadata_json, note
+                FROM rag_metadata_audit WHERE relative_path = ?
+                ORDER BY changed_at DESC, rowid DESC LIMIT ?""",
+                (normalized_path, limit)).fetchall()
+    items = []
+    for row in rows:
+        item = dict(row)
+        for column, output in (
+            ("changed_fields_json", "changed_fields"),
+            ("previous_metadata_json", "previous_metadata"),
+            ("new_metadata_json", "new_metadata"),
+        ):
+            try:
+                item[output] = json.loads(item.pop(column))
+            except (TypeError, json.JSONDecodeError):
+                item[output] = [] if output == "changed_fields" else {}
+        items.append(item)
+    return {
+        "count": len(items),
+        "limit": limit,
+        "items": items,
+        "note": (
+            "History records metadata edits, not authenticated reviewer identity. "
+            "It does not independently verify the source or establish aircraft safety certification."
+        ),
+    }

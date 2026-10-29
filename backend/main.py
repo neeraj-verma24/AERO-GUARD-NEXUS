@@ -49,6 +49,7 @@ from backend.rag_engine import (
     index_local_documents,
     query_local_documents,
     get_rag_audit_log,
+    get_rag_metadata_audit,
     update_document_metadata,
 )
 
@@ -1022,6 +1023,23 @@ def rag_audit_log_api(
         ) from exc
 
 
+
+
+@app.get("/api/v1/rag/metadata-audit")
+def rag_metadata_audit_api(
+    relative_path: str | None = Query(default=None, max_length=255),
+    limit: int = Query(default=50, ge=1, le=200),
+):
+    """Return document provenance metadata history; no reviewer identity is authenticated."""
+    try:
+        return get_rag_metadata_audit(relative_path=relative_path, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Could not read RAG metadata audit: {type(exc).__name__}: {exc}",
+        ) from exc
 
 
 @app.get("/api/v1/ai/physics-check")
