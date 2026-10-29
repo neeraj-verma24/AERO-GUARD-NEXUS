@@ -18,9 +18,15 @@ MODEL_PATH = OUTPUT / "rul_baseline.joblib"
 ENSEMBLE_PATH = OUTPUT / "rul_ensemble.joblib"
 
 
+from backend.config import get_float_setting
+
 # Prototype review thresholds, not certified safety limits.
-LOW_RUL_REVIEW_CYCLES = 30.0
-HIGH_DISAGREEMENT_REVIEW_CYCLES = 8.0
+LOW_RUL_REVIEW_CYCLES = get_float_setting(
+    "AERO_GUARD_LOW_RUL_REVIEW_CYCLES", 30.0, minimum=0.0
+)
+HIGH_DISAGREEMENT_REVIEW_CYCLES = get_float_setting(
+    "AERO_GUARD_HIGH_DISAGREEMENT_REVIEW_CYCLES", 8.0, minimum=0.0
+)
 
 
 @lru_cache(maxsize=1)

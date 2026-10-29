@@ -14,3 +14,15 @@ services:
         value: "*"
       - key: AERO_GUARD_DEMO_READ_ONLY
         value: "true"
+      - key: AERO_GUARD_SEED_DEMO_DATA
+        value: "true"
+      - key: AERO_GUARD_LOW_RUL_REVIEW_CYCLES
+        value: "30"
+      - key: AERO_GUARD_HIGH_DISAGREEMENT_REVIEW_CYCLES
+        value: "8"
+      - key: AERO_GUARD_RAG_MIN_SCORE
+        value: "0.12"
+      - key: AERO_GUARD_SENSOR_LOW_QUANTILE
+        value: "0.005"
+      - key: AERO_GUARD_SENSOR_HIGH_QUANTILE
+        value: "0.995"

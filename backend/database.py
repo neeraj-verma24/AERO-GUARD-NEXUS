@@ -3,6 +3,8 @@ from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
+from backend.config import get_bool_setting
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -22,6 +24,7 @@ def get_connection():
 def init_db():
     """Create application tables and preserve existing demo records."""
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    seed_demo_data = get_bool_setting("AERO_GUARD_SEED_DEMO_DATA", True)
 
     with closing(get_connection()) as connection:
         connection.executescript(
@@ -103,7 +106,7 @@ def init_db():
             "SELECT COUNT(*) FROM assets"
         ).fetchone()[0]
 
-        if asset_count == 0:
+        if seed_demo_data and asset_count == 0:
             connection.executemany(
                 """
                 INSERT INTO assets
@@ -136,7 +139,7 @@ def init_db():
             "SELECT COUNT(*) FROM work_orders"
         ).fetchone()[0]
 
-        if order_count == 0:
+        if seed_demo_data and order_count == 0:
             connection.executemany(
                 """
                 INSERT INTO work_orders
@@ -167,7 +170,7 @@ def init_db():
             "SELECT COUNT(*) FROM spare_parts"
         ).fetchone()[0]
 
-        if stock_count == 0:
+        if seed_demo_data and stock_count == 0:
             connection.executemany(
                 """
                 INSERT INTO spare_parts

@@ -17,7 +17,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DOCUMENTS_DIR = PROJECT_ROOT / "data" / "manuals"
 DB_PATH = PROJECT_ROOT / "data" / "aero_guard.db"
 SUPPORTED_SUFFIXES = {".txt", ".md", ".pdf"}
-MIN_SCORE = 0.12
+from backend.config import get_float_setting
+
+MIN_SCORE = get_float_setting(
+    "AERO_GUARD_RAG_MIN_SCORE", 0.12, minimum=0.0, maximum=1.0
+)
 MAX_CHUNK_CHARS = 1400
 OVERLAP_CHARS = 180
 STOP_WORDS = {

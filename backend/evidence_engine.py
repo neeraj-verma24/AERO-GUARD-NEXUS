@@ -4,8 +4,17 @@ from models.train_rul import TEST_FILE, read_cmapss
 
 
 TRAIN_FILE = TEST_FILE.with_name("train_FD001.txt")
-LOW_QUANTILE = 0.005
-HIGH_QUANTILE = 0.995
+
+from backend.config import get_float_setting
+
+LOW_QUANTILE = get_float_setting(
+    "AERO_GUARD_SENSOR_LOW_QUANTILE", 0.005, minimum=0.0, maximum=1.0
+)
+HIGH_QUANTILE = get_float_setting(
+    "AERO_GUARD_SENSOR_HIGH_QUANTILE", 0.995, minimum=0.0, maximum=1.0
+)
+if LOW_QUANTILE >= HIGH_QUANTILE:
+    raise RuntimeError("AERO-GUARD sensor configuration: LOW_QUANTILE must be less than HIGH_QUANTILE.")
 
 
 def analyze_latest_sensor_screens():
