@@ -13,9 +13,11 @@ import re
 import sqlite3
 import uuid
 
+from backend.database import DB_PATH
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DOCUMENTS_DIR = PROJECT_ROOT / "data" / "manuals"
-DB_PATH = PROJECT_ROOT / "data" / "aero_guard.db"
+# DB_PATH is imported from backend.database.
 SUPPORTED_SUFFIXES = {".txt", ".md", ".pdf"}
 from backend.config import get_float_setting
 

@@ -3,14 +3,19 @@ from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend.config import get_bool_setting
+from backend.config import get_bool_setting, get_path_setting
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-DB_PATH = DATA_DIR / "aero_guard.db"
+DB_PATH = get_path_setting(
+    "AERO_GUARD_DB_PATH",
+    DATA_DIR / "aero_guard.db",
+    relative_to=PROJECT_ROOT,
+)
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
 def get_connection():
