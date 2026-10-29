@@ -60,6 +60,11 @@ from backend.physics_engine import (
 )
 from fastapi.responses import JSONResponse
 import os
+import time
+from collections import deque
+from ipaddress import ip_address
+from math import ceil
+from threading import Lock
 from backend.config import get_bool_setting
 
 
@@ -1167,12 +1172,82 @@ def ai_model_metrics():
             "validation for real aircraft maintenance."
         ),
     }
+# STEP9 RAG QUERY RATE LIMIT
+# Prototype-level in-memory limit: 30 query submissions per client IP per 60 seconds.
+# This state resets on process restart and is not shared across multiple service instances.
+_RAG_QUERY_RATE_LIMIT = 30
+_RAG_QUERY_RATE_WINDOW_SECONDS = 60.0
+_RAG_QUERY_RATE_LIMIT_MAX_CLIENTS = 2048
+_RAG_QUERY_RATE_LIMIT_LOCK = Lock()
+_RAG_QUERY_RATE_LIMIT_BUCKETS: dict[str, deque[float]] = {}
+
+
+def _rag_query_rate_limit_key(request):
+    # Render traffic passes through Cloudflare. Prefer Cloudflare's single-IP
+    # header; do not trust a caller-supplied X-Forwarded-For chain here.
+    candidate = request.headers.get('cf-connecting-ip', '').strip()
+    try:
+        return str(ip_address(candidate))
+    except ValueError:
+        # Shared conservative bucket when a trusted client IP is unavailable.
+        return '__unknown_client_ip__'
+
+
+def _check_rag_query_rate_limit(client_key: str):
+    now = time.monotonic()
+    cutoff = now - _RAG_QUERY_RATE_WINDOW_SECONDS
+    with _RAG_QUERY_RATE_LIMIT_LOCK:
+        # Prune expired requests and empty buckets; keep memory bounded.
+        for old_key, old_hits in list(_RAG_QUERY_RATE_LIMIT_BUCKETS.items()):
+            while old_hits and old_hits[0] <= cutoff:
+                old_hits.popleft()
+            if not old_hits:
+                del _RAG_QUERY_RATE_LIMIT_BUCKETS[old_key]
+
+        bucket = _RAG_QUERY_RATE_LIMIT_BUCKETS.get(client_key)
+        if bucket is None:
+            if len(_RAG_QUERY_RATE_LIMIT_BUCKETS) >= _RAG_QUERY_RATE_LIMIT_MAX_CLIENTS:
+                client_key = '__overflow_client_bucket__'
+                bucket = _RAG_QUERY_RATE_LIMIT_BUCKETS.get(client_key)
+                if bucket is None:
+                    # Reserve a bounded slot for overflow traffic rather than
+                    # allowing arbitrary client-key growth.
+                    oldest_key = next(iter(_RAG_QUERY_RATE_LIMIT_BUCKETS))
+                    del _RAG_QUERY_RATE_LIMIT_BUCKETS[oldest_key]
+                    bucket = deque()
+                    _RAG_QUERY_RATE_LIMIT_BUCKETS[client_key] = bucket
+            else:
+                bucket = deque()
+                _RAG_QUERY_RATE_LIMIT_BUCKETS[client_key] = bucket
+
+        while bucket and bucket[0] <= cutoff:
+            bucket.popleft()
+        if len(bucket) >= _RAG_QUERY_RATE_LIMIT:
+            retry_after = max(1, ceil(_RAG_QUERY_RATE_WINDOW_SECONDS - (now - bucket[0])))
+            return retry_after
+        bucket.append(now)
+        return None
+
+
 # Optional public-demo guard. This is not authentication.
 @app.middleware('http')
 async def _step75_public_demo_write_guard(request, call_next):
-    read_only = os.getenv('AERO_GUARD_DEMO_READ_ONLY', 'false').strip().lower() in {'1', 'true', 'yes', 'on'}
     method = request.method.upper()
-    allow_rag_query = method == 'POST' and request.url.path == '/api/v1/rag/query'
+    path = request.url.path
+    if method == 'POST' and path == '/api/v1/rag/query':
+        retry_after = _check_rag_query_rate_limit(_rag_query_rate_limit_key(request))
+        if retry_after is not None:
+            return JSONResponse(
+                status_code=429,
+                content={
+                    'detail': 'RAG query rate limit exceeded. Please retry later.',
+                    'retry_after_seconds': retry_after,
+                },
+                headers={'Retry-After': str(retry_after)},
+            )
+
+    read_only = os.getenv('AERO_GUARD_DEMO_READ_ONLY', 'false').strip().lower() in {'1', 'true', 'yes', 'on'}
+    allow_rag_query = method == 'POST' and path == '/api/v1/rag/query'
     if read_only and method in {'POST', 'PUT', 'PATCH', 'DELETE'} and not allow_rag_query:
         return JSONResponse(status_code=403, content={'detail': 'Public demo is read-only; only RAG query submissions are enabled.'})
     return await call_next(request)
