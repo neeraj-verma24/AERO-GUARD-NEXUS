@@ -59,6 +59,7 @@ from backend.physics_engine import (
 )
 from fastapi.responses import JSONResponse
 import os
+from backend.config import get_bool_setting
 
 
 app = FastAPI(
@@ -66,6 +67,29 @@ app = FastAPI(
     description="Predictive Maintenance and Fleet Availability Platform",
     version="0.3.0",
 )
+
+
+@app.on_event("startup")
+def _step76_index_packaged_rag_documents():
+    """Index only shipped data/manuals files when explicitly enabled by deployment config."""
+    try:
+        enabled = get_bool_setting("AERO_GUARD_RAG_INDEX_ON_STARTUP", False)
+        if not enabled:
+            return
+        result = index_local_documents()
+        print(
+            "[AERO-GUARD RAG] startup indexing complete: "
+            f"documents_seen={result.get('documents_seen', 0)} "
+            f"document_count={result.get('document_count', 0)} "
+            f"chunk_count={result.get('chunk_count', 0)} "
+            f"errors={len(result.get('errors', []))}"
+        )
+    except Exception as exc:
+        # Keep the API available, but make the RAG indexing failure visible in service logs.
+        print(
+            "[AERO-GUARD RAG] startup indexing failed: "
+            f"{type(exc).__name__}: {str(exc)[:300]}"
+        )
 
 # Public demo CORS: replace '*' with the exact frontend origin after Vercel deploy.
 _step75_cors_origins = [x.strip() for x in os.getenv('AERO_GUARD_CORS_ORIGINS', '*').split(',') if x.strip()]
