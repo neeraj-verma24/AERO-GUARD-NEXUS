@@ -97,19 +97,31 @@ def _step76_index_packaged_rag_documents():
             f"{type(exc).__name__}: {str(exc)[:300]}"
         )
 
-# Public demo CORS: replace '*' with the exact frontend origin after Vercel deploy.
-_step75_cors_origins = [x.strip() for x in os.getenv('AERO_GUARD_CORS_ORIGINS', '*').split(',') if x.strip()]
-app.add_middleware(CORSMiddleware, allow_origins=_step75_cors_origins, allow_credentials=False, allow_methods=['GET', 'POST', 'OPTIONS'], allow_headers=['Content-Type', 'Accept'])
+# CORS policy: production uses configured origins; local development has localhost origins.
+_cors_origins_setting = os.getenv('AERO_GUARD_CORS_ORIGINS')
+
+if _cors_origins_setting:
+    _step75_cors_origins = [
+        origin.strip()
+        for origin in _cors_origins_setting.split(',')
+        if origin.strip()
+    ]
+    _step75_cors_methods = ['GET', 'POST', 'OPTIONS']
+    _step75_cors_headers = ['Content-Type', 'Accept']
+else:
+    _step75_cors_origins = [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+    ]
+    _step75_cors_methods = ['*']
+    _step75_cors_headers = ['*']
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=_step75_cors_origins,
     allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=_step75_cors_methods,
+    allow_headers=_step75_cors_headers,
 )
 
 

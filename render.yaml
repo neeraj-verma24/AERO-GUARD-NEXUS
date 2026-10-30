@@ -11,7 +11,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.12.7
       - key: AERO_GUARD_CORS_ORIGINS
-        value: "*"
+        value: "https://aero-guard-nexus.vercel.app"
       - key: AERO_GUARD_DEMO_READ_ONLY
         value: "true"
       - key: AERO_GUARD_RAG_INDEX_ON_STARTUP
