@@ -1,4 +1,6 @@
+
 from functools import lru_cache
+import json
 
 import joblib
 import numpy as np
@@ -10,23 +12,69 @@ from models.train_rul import (
     read_cmapss,
 )
 
+from backend.config import get_float_setting
+
 
 # Keep the existing model unchanged.
 MODEL_PATH = OUTPUT / "rul_baseline.joblib"
+BASELINE_METADATA_PATH = OUTPUT / "rul_metadata.json"
 
 # Experimental five-member ensemble created in Step 40.
 ENSEMBLE_PATH = OUTPUT / "rul_ensemble.joblib"
 
 
-from backend.config import get_float_setting
-
 # Prototype review thresholds, not certified safety limits.
 LOW_RUL_REVIEW_CYCLES = get_float_setting(
     "AERO_GUARD_LOW_RUL_REVIEW_CYCLES", 30.0, minimum=0.0
 )
+
 HIGH_DISAGREEMENT_REVIEW_CYCLES = get_float_setting(
     "AERO_GUARD_HIGH_DISAGREEMENT_REVIEW_CYCLES", 8.0, minimum=0.0
 )
+
+
+@lru_cache(maxsize=1)
+def load_rul_target_cap() -> float:
+    """Load and validate the target cap recorded with the baseline model."""
+    if not BASELINE_METADATA_PATH.is_file():
+        raise FileNotFoundError(
+            f"Baseline metadata not found: {BASELINE_METADATA_PATH}"
+        )
+
+    try:
+        metadata = json.loads(
+            BASELINE_METADATA_PATH.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            "Unable to read baseline RUL metadata."
+        ) from exc
+
+    if not isinstance(metadata, dict):
+        raise ValueError(
+            "Baseline RUL metadata must be a JSON object."
+        )
+
+    raw_cap = metadata.get("target_cap_cycles")
+
+    if isinstance(raw_cap, bool):
+        raise ValueError(
+            "Baseline target cap must be a positive finite number."
+        )
+
+    try:
+        cap = float(raw_cap)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "Baseline metadata must contain numeric target_cap_cycles."
+        ) from exc
+
+    if not np.isfinite(cap) or cap <= 0:
+        raise ValueError(
+            "Baseline target_cap_cycles must be positive and finite."
+        )
+
+    return cap
 
 
 @lru_cache(maxsize=1)
@@ -52,11 +100,43 @@ def load_rul_ensemble():
 
     bundle = joblib.load(ENSEMBLE_PATH)
 
-    # Step 40 saves a dictionary containing the member models.
+    # Current ensemble bundle contains member models and target cap.
     if isinstance(bundle, dict):
         models = bundle.get("models")
+        raw_ensemble_cap = bundle.get("target_cap")
+
+        if isinstance(raw_ensemble_cap, bool):
+            raise ValueError(
+                "Ensemble target cap must be numeric."
+            )
+
+        try:
+            ensemble_cap = float(raw_ensemble_cap)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "Ensemble bundle is missing a valid target_cap."
+            ) from exc
+
+        if not np.isfinite(ensemble_cap) or ensemble_cap <= 0:
+            raise ValueError(
+                "Ensemble target cap must be positive and finite."
+            )
+
+        metadata_cap = load_rul_target_cap()
+
+        if not np.isclose(
+            ensemble_cap,
+            metadata_cap,
+            rtol=0.0,
+            atol=1e-9,
+        ):
+            raise ValueError(
+                f"RUL cap mismatch: baseline metadata={metadata_cap}, "
+                f"ensemble={ensemble_cap}."
+            )
+
     else:
-        # Support a plain list of models as well.
+        # Support legacy plain-list ensemble bundles.
         models = bundle
 
     if not isinstance(models, (list, tuple)) or not models:
@@ -90,6 +170,9 @@ def get_latest_rul_predictions():
     baseline_model = load_rul_model()
     ensemble_models = load_rul_ensemble()
 
+    # Read the cap recorded with the trained baseline model.
+    RUL_TARGET_CAP_CYCLES = load_rul_target_cap()
+
     test_df = read_cmapss(TEST_FILE)
     test_features = make_features(test_df)
 
@@ -119,11 +202,9 @@ def get_latest_rul_predictions():
         ),
     )
 
-    # The trained target uses a 125-cycle RUL cap. Apply the same supported
-    # output range before computing mean, disagreement, and member percentiles.
-    RUL_TARGET_CAP_CYCLES = 125.0
+    # Apply the same model-supported range to baseline predictions.
     baseline_predictions = np.clip(
-        np.asarray(baseline_predictions, dtype=float),
+        baseline_predictions,
         0.0,
         RUL_TARGET_CAP_CYCLES,
     )

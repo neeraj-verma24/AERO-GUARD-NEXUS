@@ -278,6 +278,7 @@ def main():
         ).isoformat(),
         "dataset": "NASA C-MAPSS FD001",
         "rolling_window_cycles": WINDOW,
+        "target_cap_cycles": RUL_CAP,
         "feature_columns": list(X.columns),
         "training_target": (
             "max observed training cycle - current cycle, "
