@@ -1,4 +1,3 @@
-
 from datetime import datetime, timezone
 from pathlib import Path
 import json
@@ -10,6 +9,8 @@ import pandas as pd
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import GroupShuffleSplit
+
+from backend.config import get_float_setting
 
 
 # -------------------------------------------------------
@@ -26,7 +27,23 @@ TEST_FILE = DATA / "test_FD001.txt"
 RUL_FILE = DATA / "RUL_FD001.txt"
 
 WINDOW = 20
-RUL_CAP = 125
+
+# Configurable RUL target cap.
+# Default: 125 cycles.
+_RUL_CAP_SETTING = get_float_setting(
+    "AERO_GUARD_RUL_TRAINING_CAP_CYCLES",
+    125.0,
+    minimum=1.0,
+)
+
+if not _RUL_CAP_SETTING.is_integer():
+    raise RuntimeError(
+        "AERO_GUARD_RUL_TRAINING_CAP_CYCLES "
+        "must be a whole number of cycles."
+    )
+
+RUL_CAP = int(_RUL_CAP_SETTING)
+
 RANDOM_STATE = 42
 
 SETTING_COLS = [
@@ -128,6 +145,8 @@ def main():
     print("=" * 60)
     print("AERO-GUARD NEXUS | RUL BASELINE TRAINING")
     print("=" * 60)
+
+    print(f"\nConfigured RUL target cap: {RUL_CAP} cycles")
 
     print("\n[1/6] Reading NASA C-MAPSS FD001 files...")
 

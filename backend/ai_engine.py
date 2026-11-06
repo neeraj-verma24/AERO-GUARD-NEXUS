@@ -83,7 +83,7 @@ def load_rul_model():
     if not MODEL_PATH.is_file():
         raise FileNotFoundError(
             f"Baseline model not found: {MODEL_PATH}. "
-            "Run python models\\train_rul.py first."
+            "Run python -m models.train_rul first."
         )
 
     return joblib.load(MODEL_PATH)
