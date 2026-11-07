@@ -21,7 +21,6 @@ import {
   Wifi,
   WifiOff,
   Wrench,
-  Waves,
   Zap,
 } from "lucide-react";
 
@@ -86,7 +85,67 @@ function useApiList(endpoint) {
 
   return { items, loading, error };
 }
+/* Fetch database-derived dashboard summary */
+function useApiSummary() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  useEffect(() => {
+    let active = true;
+
+    async function loadSummary() {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/summary`, {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Summary API returned HTTP ${response.status}`
+          );
+        }
+
+        const payload = await response.json();
+
+        if (
+          !payload ||
+          typeof payload !== "object" ||
+          !payload.assets ||
+          typeof payload.assets !== "object" ||
+          !payload.work_orders ||
+          typeof payload.work_orders !== "object"
+        ) {
+          throw new Error("Unexpected summary API response format");
+        }
+
+        if (active) {
+          setData(payload);
+          setError("");
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message || "Could not load dashboard summary");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadSummary();
+
+    const timer = window.setInterval(loadSummary, 15000);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, []);
+
+  return { data, loading, error };
+}
 /* Fetch NASA C-MAPSS RUL predictions from the trained local model */
 function useRulPredictions() {
   const [data, setData] = useState(null);
@@ -205,6 +264,7 @@ function MetricCard({
   change,
   tone = "cyan",
   down = false,
+  showTrend = true,
 }) {
   return (
     <article className="metric-card">
@@ -216,14 +276,18 @@ function MetricCard({
       <div className="metric-value">{value}</div>
 
       <div className="metric-bottom">
-        <span className={down ? "metric-change negative" : "metric-change"}>
-          {down ? (
-            <ArrowDownRight size={14} />
-          ) : (
-            <ArrowUpRight size={14} />
-          )}
-          {change}
-        </span>
+        {showTrend ? (
+          <span className={down ? "metric-change negative" : "metric-change"}>
+            {down ? (
+              <ArrowDownRight size={14} />
+            ) : (
+              <ArrowUpRight size={14} />
+            )}
+            {change}
+          </span>
+        ) : (
+          <span className="muted small">{change}</span>
+        )}
 
         <span className="muted small">{detail}</span>
       </div>
@@ -345,7 +409,54 @@ function Overview({
   assetsData,
   assetsLoading,
   assetsError,
+  summaryData,
+  summaryLoading,
+  summaryError,
 }) {
+  const attentionAssets = assetsData.filter(
+    (asset) => asset.status && asset.status !== "Healthy"
+  );
+
+  const summarySourceLabel = summaryLoading
+    ? "Loading database summary"
+    : summaryError
+      ? "Summary unavailable"
+      : summaryData?.data_source === "synthetic_demo"
+        ? "Synthetic demo records"
+        : summaryData?.data_source || "Backend database records";
+
+  const formatSummaryValue = (value, formatter = (number) => String(number)) => {
+    if (summaryLoading) return "Loading...";
+    if (summaryError) return "Unavailable";
+    if (value === null || value === undefined || value === "") return "—";
+
+    const number = Number(value);
+    return Number.isFinite(number) ? formatter(number) : "—";
+  };
+
+  const healthyAssetsValue = (() => {
+    if (summaryLoading) return "Loading...";
+    if (summaryError) return "Unavailable";
+
+    const healthy = Number(summaryData?.assets?.healthy_assets);
+    const total = Number(summaryData?.assets?.total_assets);
+
+    if (!Number.isFinite(healthy) || !Number.isFinite(total)) return "—";
+    return `${healthy} / ${total}`;
+  })();
+
+  const summaryBannerText = summaryLoading
+    ? "Loading KPI values from the backend summary service. The trend chart below remains illustrative, not live aircraft telemetry."
+    : summaryError
+      ? "Dashboard summary could not be loaded. KPI values are unavailable until the backend summary service responds. The trend chart below remains illustrative, not live aircraft telemetry."
+      : summaryData?.data_source === "synthetic_demo"
+        ? "KPI cards are calculated from backend database records. The current database source is synthetic demonstration data, not live aircraft telemetry. The trend chart remains illustrative."
+        : "KPI cards are calculated from backend database records. The trend chart remains illustrative and is not live aircraft telemetry.";
+
+  const attentionCount = assetsLoading || assetsError
+    ? "—"
+    : String(attentionAssets.length + (simulatedFault ? 1 : 0)).padStart(2, "0");
+
   return (
     <>
       <div className="demo-banner">
@@ -355,54 +466,60 @@ function Overview({
 
         <div>
           <strong>SIMULATION ENVIRONMENT</strong>
-          <span>
-            Asset records are served by the application API. Fleet summary
-            figures and the trend chart are illustrative demo values,
-            not live aircraft telemetry.
-          </span>
+          <span>{summaryBannerText}</span>
         </div>
 
-        <span className="demo-tag">DEMO DATA</span>
+        <span className="demo-tag">
+          {summaryData?.data_source === "synthetic_demo" ? "DEMO DATA" : "SERVICE SUMMARY"}
+        </span>
       </div>
 
       <div className="metrics-grid">
         <MetricCard
           icon={Gauge}
-          label="Fleet availability"
-          value={simulatedFault ? "85.8%" : "86.4%"}
-          change={simulatedFault ? "−0.6 pp" : "+2.4 pp"}
-          detail="simulated baseline"
+          label="Average asset health"
+          value={formatSummaryValue(
+            summaryData?.assets?.average_health,
+            (number) => `${number.toFixed(1)}%`
+          )}
+          change="Backend summary"
+          detail={summarySourceLabel}
           tone="cyan"
-          down={simulatedFault}
+          showTrend={false}
         />
 
         <MetricCard
           icon={Plane}
-          label="Ready assets"
-          value={simulatedFault ? "18 / 22" : "19 / 22"}
-          change={simulatedFault ? "−1 asset" : "Illustrative"}
-          detail="simulated fleet"
+          label="Healthy assets"
+          value={healthyAssetsValue}
+          change="Healthy status records"
+          detail={summarySourceLabel}
           tone="green"
-          down={simulatedFault}
+          showTrend={false}
         />
 
         <MetricCard
           icon={Activity}
-          label="Items for review"
-          value={simulatedFault ? "05" : "04"}
-          change={simulatedFault ? "+1 demo event" : "Demo summary"}
-          detail="not certified alerts"
+          label="Assets not marked healthy"
+          value={formatSummaryValue(
+            summaryData?.assets?.assets_needing_review
+          )}
+          change="Any status other than Healthy"
+          detail={summarySourceLabel}
           tone="amber"
-          down={simulatedFault}
+          showTrend={false}
         />
 
         <MetricCard
           icon={Clock3}
-          label="Planned maintenance"
-          value="07"
-          change="Next 72 cycles"
-          detail="illustrative forecast"
+          label="Open work orders"
+          value={formatSummaryValue(
+            summaryData?.work_orders?.open_work_orders
+          )}
+          change="Not completed or closed"
+          detail={summarySourceLabel}
           tone="purple"
+          showTrend={false}
         />
       </div>
 
@@ -434,7 +551,11 @@ function Overview({
                 ? "Loading assets..."
                 : `${assetsData.length} database records shown`}
             </span>
-            <span>Synthetic demonstration records</span>
+            <span>
+              {summaryData?.data_source === "synthetic_demo"
+                ? "Synthetic demonstration records"
+                : "Application database records"}
+            </span>
           </div>
         </section>
 
@@ -442,12 +563,10 @@ function Overview({
           <div className="panel-heading">
             <div>
               <div className="eyebrow">ATTENTION REQUIRED</div>
-              <h3>Maintenance signals</h3>
+              <h3>Assets needing attention</h3>
             </div>
 
-            <span className="alert-count">
-              {simulatedFault ? "03" : "02"}
-            </span>
+            <span className="alert-count">{attentionCount}</span>
           </div>
 
           {simulatedFault && (
@@ -458,35 +577,53 @@ function Overview({
 
               <div className="signal-content">
                 <strong>Simulated sensor anomaly</strong>
-                <span>AG-021 · Injected demo event</span>
-                <small>Human review required</small>
+                <span>Fault Lab · UI-only demo event</span>
+                <small>This event does not change database records or ML predictions</small>
               </div>
             </div>
           )}
 
-          <div className="signal-item warning">
-            <div className="signal-icon">
-              <Waves size={17} />
-            </div>
+          {assetsLoading && (
+            <div className="table-state">Loading asset statuses...</div>
+          )}
 
-            <div className="signal-content">
-              <strong>Hydraulic health review</strong>
-              <span>AG-021 · Synthetic reading</span>
-              <small>Pending validation</small>
+          {!assetsLoading && assetsError && (
+            <div className="table-state error">
+              Could not load asset statuses: {assetsError}
             </div>
-          </div>
+          )}
 
-          <div className="signal-item info">
-            <div className="signal-icon">
-              <Cpu size={17} />
+          {!assetsLoading && !assetsError && attentionAssets.length === 0 && !simulatedFault && (
+            <div className="table-state">
+              No assets currently have a non-Healthy status.
             </div>
+          )}
 
-            <div className="signal-content">
-              <strong>Sensor integrity check</strong>
-              <span>AG-032 · Simulated status</span>
-              <small>Inspection suggested</small>
-            </div>
-          </div>
+          {!assetsLoading && !assetsError && attentionAssets.map((asset) => {
+            const needsReview = asset.status === "Review";
+            const SignalIcon = needsReview ? AlertTriangle : Activity;
+
+            return (
+              <div
+                className={`signal-item ${needsReview ? "warning" : "info"}`}
+                key={asset.id}
+              >
+                <div className="signal-icon">
+                  <SignalIcon size={17} />
+                </div>
+
+                <div className="signal-content">
+                  <strong>{asset.subsystem || "Asset status review"}</strong>
+                  <span>{asset.id} · {asset.status}</span>
+                  <small>
+                    {needsReview
+                      ? "Engineering review indicated"
+                      : "Monitoring status · observation required"}
+                  </small>
+                </div>
+              </div>
+            );
+          })}
 
           <div className="simulation-box">
             <div className="simulation-box-top">
@@ -497,7 +634,7 @@ function Overview({
 
             <p>
               Inject a synthetic anomaly to test the interface.
-              This button does not run an ML model.
+              This button does not run an ML model or update the database.
             </p>
 
             <button
@@ -2047,6 +2184,7 @@ function App() {
   const assets = useApiList("/api/v1/assets");
   const workOrders = useApiList("/api/v1/work-orders");
   const spares = useApiList("/api/v1/spares");
+  const summary = useApiSummary();
   const rul = useRulPredictions();
   const metrics = useModelMetrics();
 
@@ -2291,6 +2429,9 @@ function App() {
               assetsData={assets.items}
               assetsLoading={assets.loading}
               assetsError={assets.error}
+              summaryData={summary.data}
+              summaryLoading={summary.loading}
+              summaryError={summary.error}
             />
           )}
 
